@@ -1,0 +1,212 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Primary */
+  --color-primary: #8ee600;
+  --color-primary-dark: #62b800;
+  --color-primary-light: #c2ff50;
+  --color-primary-subtle: #f2ffc4;
+
+  /* State / Error */
+  --color-error: #ff3b3b;
+  --color-error-dark: #e53535;
+  --color-error-light: #ff5c5c;
+  --color-error-subtle: #ff8080;
+
+  /* State / Warning */
+  --color-warning: #ffcc00;
+  --color-warning-dark: #e5b800;
+  --color-warning-light: #fddd48;
+  --color-warning-subtle: #fded72;
+
+  /* State / Info */
+  --color-info: #0063f7;
+  --color-info-dark: #004fc4;
+  --color-info-light: #5b8def;
+  --color-info-subtle: #9dbff9;
+
+  /* State / Success */
+  --color-success: #06c270;
+  --color-success-dark: #05a660;
+  --color-success-light: #39d98a;
+  --color-success-subtle: #57eba1;
+
+  /* Typography / Dark */
+  --color-text-dark: #222228;
+  --color-text-dark-secondary: #6b6b6b;
+  --color-text-dark-disabled: #dde1e8;
+
+  /* Typography / Light */
+  --color-text-light: #f9f9f9;
+  --color-text-light-secondary: #d8d8d8;
+  --color-text-light-disabled: #4a4a4a;
+
+  /* Background */
+  --color-bg-content: #232323;
+  --color-bg-primary: #8ee600;
+  --color-bg-body: #111111;
+  --color-bg-light-50: rgba(255, 255, 255, 0.5);
+  --color-bg-dark-50: rgba(0, 0, 0, 0.5);
+
+  /* Button / Primary */
+  --color-btn-primary: #8ee600;
+  --color-btn-primary-hover: #62b800;
+  --color-btn-primary-press: #c2ff50;
+  --color-btn-primary-disabled: #dcdcdc;
+
+  /* Button / Secondary */
+  --color-btn-secondary: #232323;
+  --color-btn-secondary-hover: #323232;
+  --color-btn-secondary-press: #5e5e5e;
+  --color-btn-secondary-disabled: #dcdcdc;
+
+  /* Border & Divider */
+  --color-border-primary: #e7eaf3;
+  --color-border-secondary: #a3ab9e;
+  --color-border-accent: #8ee600;
+  --color-border-tertiary: #414141;
+
+  /* Button / Tertiary */
+  --color-btn-tertiary: #111111;
+  --color-btn-tertiary-hover: #202020;
+  --color-btn-tertiary-press: #5e5e5e;
+  --color-btn-tertiary-disabled: #dcdcdc;
+
+  /* Button / Error */
+  --color-btn-error: #ff3b3b;
+  --color-btn-error-hover: #e53535;
+  --color-btn-error-press: #ff5c5c;
+  --color-btn-error-disabled: #dcdcdc;
+
+  /* Link / Light */
+  --color-link-light: #f9f9f9;
+  --color-link-light-hover: #8ee600;
+  --color-link-light-press: #c2ff50;
+  --color-link-light-disabled: #4a4a4a;
+
+  /* Link / Dark */
+  --color-link-dark: #222228;
+  --color-link-dark-hover: #8ee600;
+  --color-link-dark-press: #c2ff50;
+  --color-link-dark-disabled: #dde1e8;
+
+  /* Link / Primary */
+  --color-link-primary: #8ee600;
+  --color-link-primary-hover: #62b800;
+  --color-link-primary-press: #c2ff50;
+  --color-link-primary-disabled: #4a4a4a;
+
+  /* Fonts */
+  --font-primary: 'Overused Grotesk', sans-serif;
+}
+
+@utility heading-4xl {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 56px;
+  line-height: 56px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-3xl {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 48px;
+  line-height: 52px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-2xl {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 44px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-xl {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 36px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-l {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 32px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-m {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.015em;
+}
+
+@utility heading-s {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 26px;
+}
+
+@utility body-medium-regular {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+@utility body-medium-medium {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+@utility body-normal-regular {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@utility body-normal-medium {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@utility stylized-lead {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@utility body-small-regular {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+@utility body-small-medium {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+@utility label-normal {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+}
