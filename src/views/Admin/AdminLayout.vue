@@ -22,7 +22,12 @@ const handleLogout = async () => {
 
 const isAdmin = computed(() => currentUser.value?.role === 'ADMIN')
 
-const isActive = (path) => route.path === path
+const isActive = (path) => {
+  if (path === '/admin/content') {
+    return route.path.startsWith('/admin/content')
+  }
+  return route.path === path
+}
 </script>
 
 <template>
@@ -74,7 +79,11 @@ const isActive = (path) => route.path === path
           @click="router.push('/admin/genres')"
         >
           <template #left-icon>
-            <IconEdit class="w-[24px] h-[24px]" />
+            <div class="w-[24px] h-[24px] flex items-center justify-center">
+              <svg viewBox="0 0 24 24" class="w-[20px] h-[20px]" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+              </svg>
+            </div>
           </template>
           Жанры
         </BaseButton>

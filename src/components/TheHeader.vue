@@ -88,9 +88,9 @@ onUnmounted(() => {
 
       <!-- Обертка навигации -->
       <div class="p-[4px] rounded-[8px] bg-bg-content flex gap-[16px]">
-        <BaseButton variant="secondary" size="s" @click="router.push('/catalog')">Фильмы</BaseButton>
-        <BaseButton variant="secondary" size="s">Сериалы</BaseButton>
-        <BaseButton variant="secondary" size="s">Мультфильмы</BaseButton>
+        <BaseButton variant="secondary" size="s" @click="router.push('/catalog?type=MOVIE')">Фильмы</BaseButton>
+        <BaseButton variant="secondary" size="s" @click="router.push('/catalog?type=SERIES')">Сериалы</BaseButton>
+        <BaseButton variant="secondary" size="s" @click="router.push('/catalog?type=CARTOON')">Мультфильмы</BaseButton>
       </div>
     </div>
 

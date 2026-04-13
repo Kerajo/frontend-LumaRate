@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import Container from '@/components/Container.vue'
 import BaseButton from '@/components/BaseButton.vue'
+import AdminImageUpload from '@/components/Admin/AdminImageUpload.vue'
 
 const { accessToken } = useAuth()
 
@@ -21,6 +22,12 @@ const handleSubmit = async () => {
   loading.value = true
   error.value = null
   success.value = null
+
+  if (!form.value.photoUrl) {
+    error.value = 'Пожалуйста, загрузите фото персоны'
+    loading.value = false
+    return
+  }
 
   try {
     // 1. Отправляем данные персоны (с путём к фото)
@@ -79,16 +86,11 @@ const handleSubmit = async () => {
         </div>
 
         <!-- URL Фото -->
-        <div class="space-y-[12px]">
-          <label class="body-normal-medium text-text-light-secondary ml-[4px]">URL Фото персоны</label>
-          <input
-            v-model="form.photoUrl"
-            type="url"
-            placeholder="https://example.com/photo.jpg"
-            class="w-full bg-bg-content border border-white/5 rounded-[12px] px-[24px] py-[18px] text-text-light body-normal-regular focus:outline-none focus:border-primary/40 transition-all placeholder:text-text-light-disabled shadow-sm"
-            required
-          />
-        </div>
+        <AdminImageUpload
+          label="Фото персоны"
+          variant="square"
+          v-model="form.photoUrl"
+        />
 
         <!-- Кнопка отправки -->
         <div class="pt-[20px]">

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import BadgeInfo from './BadgeInfo.vue';
+import { getFullImageUrl } from '../utils/url';
 import IconButton from './IconButton.vue';
 import IconBookmarks from './icons/IconBookmarks.vue';
 
@@ -69,7 +70,7 @@ const sizeClasses = computed(() => {
   >
     <!-- Background Image with Blur on Hover -->
     <img 
-      :src="posterUrl" 
+      :src="getFullImageUrl(posterUrl)" 
       alt="Movie Poster" 
       class="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:blur-[8px] group-hover:scale-105"
     />
@@ -83,7 +84,7 @@ const sizeClasses = computed(() => {
       <!-- Top Badges & Bookmark -->
       <div class="flex justify-between items-start relative z-10">
         <div class="flex gap-[8px] flex-wrap items-start transition-opacity duration-300">
-          <BadgeInfo v-if="rating" variant="rating" size="s" :rating="rating * 2">{{ (rating * 2).toFixed(1) }}</BadgeInfo>
+          <BadgeInfo v-if="rating" variant="rating" size="s" :rating="rating">{{ rating.toFixed(1) }}</BadgeInfo>
           <BadgeInfo v-if="statusText" variant="default" size="s">{{ statusText }}</BadgeInfo>
         </div>
         

@@ -62,7 +62,19 @@ const router = createRouter({
         },
         {
           path: 'content',
-          name: 'admin-content',
+          name: 'admin-content-list',
+          component: () => import('../views/Admin/AdminContentListView.vue'),
+          meta: { roles: ['ADMIN'] }
+        },
+        {
+          path: 'content/add',
+          name: 'admin-content-add',
+          component: () => import('../views/Admin/AdminContentView.vue'),
+          meta: { roles: ['ADMIN'] }
+        },
+        {
+          path: 'content/edit/:id',
+          name: 'admin-content-edit',
           component: () => import('../views/Admin/AdminContentView.vue'),
           meta: { roles: ['ADMIN'] }
         },

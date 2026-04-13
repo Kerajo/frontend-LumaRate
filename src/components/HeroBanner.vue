@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import Container from './Container.vue'
 import BadgeInfo from './BadgeInfo.vue'
+import { getFullImageUrl } from '../utils/url'
 import BaseButton from './BaseButton.vue'
 import IconButton from './IconButton.vue'
 import IconBookmarks from './icons/IconBookmarks.vue'
@@ -39,7 +40,7 @@ const toggleBookmark = () => {
           rgba(0, 0, 0, 0) 50%,
           rgba(0, 0, 0, 0.8) 96.63%
         ),
-        url('${bannerUrl}')`,
+        url('${getFullImageUrl(bannerUrl)}')`,
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat'
@@ -49,7 +50,7 @@ const toggleBookmark = () => {
       <div class="flex flex-col gap-[24px] max-w-[800px] animate-in fade-in slide-in-from-bottom-6 duration-700">
         <!-- Tags -->
         <div class="flex flex-wrap gap-[8px]">
-          <BadgeInfo v-if="rating" variant="rating" :rating="rating * 2">{{ (rating * 2).toFixed(1) }}</BadgeInfo>
+          <BadgeInfo v-if="rating" variant="rating" :rating="rating">{{ rating.toFixed(1) }}</BadgeInfo>
           <BadgeInfo v-if="ageLimit">{{ ageLimit }}</BadgeInfo>
           <BadgeInfo v-if="year">{{ year }}</BadgeInfo>
           <BadgeInfo v-for="genre in genres" :key="genre">{{ genre }}</BadgeInfo>

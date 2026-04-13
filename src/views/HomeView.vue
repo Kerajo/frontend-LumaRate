@@ -26,9 +26,9 @@ const mapMovie = (movie) => {
     // ПРЯМОЙ МАППИНГ: постер в постер, баннер в баннер. Без перепутываний.
     posterUrl: movie.posterUrl, 
     bannerUrl: movie.bannerUrl,
-    rating: movie.siteRating || movie.imdbRating || movie.kinopoiskRating || 0,
+    rating: movie.siteRating ? movie.siteRating * 2 : 0,
     genres: movie.genres?.map(g => g.name) || [],
-    ageLimit: movie.ageRating || '16+',
+    ageLimit: movie.ageLimit || '16+',
     statusText: movie.statusText || '' 
   }
 }
@@ -115,14 +115,15 @@ const getGenreImage = (name) => {
     <MovieCategoryBlock title="Жанры">
       <GenreCard 
         v-for="genre in (homeData.genres.length ? homeData.genres.map(g => ({ 
+          id: g.id,
           title: g.name, 
           slug: g.slug,
           imageUrl: getGenreImage(g.name) 
         })) : defaultGenres)" 
-        :key="genre.slug || genre.title"
+        :key="genre.id || genre.slug || genre.title"
         :title="genre.title"
         :imageUrl="genre.imageUrl"
-        @click="$router.push(`/catalog?genre=${genre.slug}`)"
+        @click="$router.push(`/catalog?genre_id=${genre.id}`)"
       />
     </MovieCategoryBlock>
 

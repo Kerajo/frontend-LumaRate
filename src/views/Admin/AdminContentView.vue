@@ -1,11 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const { accessToken } = useAuth()
+const route = useRoute()
+const router = useRouter()
+
 // Компоненты проекта
 import Container from '@/components/Container.vue'
 import AdminMultiSelect from '@/components/Admin/AdminMultiSelect.vue'
+import AdminImageUpload from '@/components/Admin/AdminImageUpload.vue'
+import BaseButton from '@/components/BaseButton.vue'
+
+// Состояния
+const contentId = computed(() => route.params.id)
+const isEditMode = computed(() => !!contentId.value)
 
 // Списочные данные
 const genres = ref([])
@@ -45,13 +55,15 @@ const form = ref({
 })
 
 const loading = ref(false)
+const initialLoading = ref(false)
 const error = ref(null)
 const success = ref(null)
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
 
-// Загрузка справочников
+// Загрузка справочников и данных (если редактирование)
 onMounted(async () => {
+  initialLoading.value = true
   try {
     const headers = { 'Authorization': `Bearer ${accessToken.value}` }
 
@@ -64,8 +76,54 @@ onMounted(async () => {
     genres.value = (await genresRes.json()).map(g => ({ id: g.id, name: g.name }))
     countries.value = (await countriesRes.json()).map(c => ({ id: c.id, name: c.name }))
     persons.value = (await personsRes.json()).map(p => ({ id: p.id, name: p.fullName }))
+
+    // Если мы в режиме редактирования - загружаем данные контента
+    if (isEditMode.value) {
+      // 1. Сначала нам нужно получить слаг контента, так как прямого GET по ID может не быть
+      const listRes = await fetch(`${API_BASE_URL}/admin/contents?limit=100`, { headers })
+      const listData = await listRes.json()
+      const contentInfo = listData.data?.find(item => item.id === contentId.value)
+      
+      if (!contentInfo) throw new Error('Контент не найден в списке')
+
+      // 2. Загружаем полные данные через публичный эндпоинт по слагу
+      const contentRes = await fetch(`${API_BASE_URL}/contents/${contentInfo.slug}`, { headers })
+      if (!contentRes.ok) throw new Error('Не удалось загрузить детальные данные контента')
+      
+      const contentData = await contentRes.json()
+      
+      // 3. Заполняем форму, сопоставляя имена с ID из справочников
+      form.value = {
+        ...contentData,
+        id: contentId.value, // сохраняем оригинальный ID для PATCH
+        type: contentData.type || contentInfo.type,
+        genreIds: contentData.genres?.map(g => {
+          const found = genres.value.find(og => og.name === g.name)
+          return found ? found.id : null
+        }).filter(Boolean) || [],
+        countryIds: contentData.countries?.map(c => {
+          const found = countries.value.find(oc => oc.name === c.name)
+          return found ? found.id : null
+        }).filter(Boolean) || [],
+        directorIds: contentData.directors?.map(p => {
+          const found = persons.value.find(op => op.name === p.fullName)
+          return found ? found.id : null
+        }).filter(Boolean) || [],
+        actorIds: contentData.actors?.map(p => {
+          const found = persons.value.find(op => op.name === p.fullName)
+          return found ? found.id : null
+        }).filter(Boolean) || [],
+        trailers: contentData.trailers?.length ? contentData.trailers : form.value.trailers,
+        externalRatingImdb: contentData.ratings?.imdbRating || 0,
+        externalRatingKinopoisk: contentData.ratings?.kinopoiskRating || 0,
+        isPublished: contentInfo.isPublished ?? true
+      }
+    }
   } catch (err) {
     console.error('Failed to fetch initial data:', err)
+    error.value = err.message
+  } finally {
+    initialLoading.value = false
   }
 })
 
@@ -87,6 +145,7 @@ const slugify = (text) => {
 }
 
 const generateSlug = () => {
+  if (isEditMode.value) return // При редактировании обычно не меняем слаг автоматически
   if (!form.value.title.trim()) {
     form.value.slug = ''
     return
@@ -103,9 +162,12 @@ const handleSubmit = async () => {
   success.value = null
 
   try {
-    // 3. Отправляем форму (с путями к файлам)
-    const response = await fetch(`${API_BASE_URL}/admin/contents`, {
-      method: 'POST',
+    const url = isEditMode.value 
+      ? `${API_BASE_URL}/admin/contents/${contentId.value}`
+      : `${API_BASE_URL}/admin/contents`
+
+    const response = await fetch(url, {
+      method: isEditMode.value ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken.value}`
@@ -116,11 +178,15 @@ const handleSubmit = async () => {
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(data.message || 'Ошибка при создании контента')
+      throw new Error(data.message || 'Ошибка при сохранении контента')
     }
 
-    success.value = 'Контент успешно создан!'
+    success.value = isEditMode.value ? 'Контент успешно обновлён!' : 'Контент успешно создан!'
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    if (!isEditMode.value) {
+      setTimeout(() => router.push('/admin/content'), 1500)
+    }
   } catch (err) {
     error.value = err.message
   } finally {
@@ -134,7 +200,19 @@ const handleSubmit = async () => {
   <Container>
     <div class="space-y-[40px] animate-in fade-in slide-in-from-bottom-4 duration-700 pb-[100px]">
       <div class="flex items-center justify-between flex-wrap gap-[16px]">
-        <h1 class="heading-l text-text-light tracking-tight font-bold">Добавление контента</h1>
+        <div class="flex items-center gap-[24px]">
+          <button 
+            @click="router.push('/admin/content')"
+            class="p-[12px] bg-white/5 hover:bg-white/10 rounded-[12px] text-text-light/60 hover:text-text-light transition-all"
+          >
+            <svg class="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h1 class="heading-l text-text-light tracking-tight font-bold">
+            {{ isEditMode ? 'Редактирование контента' : 'Добавление контента' }}
+          </h1>
+        </div>
 
         <div v-if="success" class="bg-primary/10 border border-primary/20 text-primary px-[20px] py-[10px] rounded-[10px] body-normal-medium">
           {{ success }}
@@ -144,7 +222,11 @@ const handleSubmit = async () => {
         </div>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-[32px]">
+      <div v-if="initialLoading" class="py-[100px] text-center text-text-light/20 animate-pulse">
+        Загрузка данных...
+      </div>
+
+      <form v-else @submit.prevent="handleSubmit" class="space-y-[32px]">
 
         <!-- Название и Оригинальное название -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
@@ -172,26 +254,16 @@ const handleSubmit = async () => {
 
         <!-- Постер и Баннер -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
-          <div class="space-y-[12px]">
-            <label class="body-normal-medium text-text-light-secondary ml-[4px]">URL Постера</label>
-            <input
-              v-model="form.posterUrl"
-              type="url"
-              placeholder="https://example.com/poster.jpg"
-              class="w-full bg-bg-content border border-white/5 rounded-[12px] px-[24px] py-[18px] text-text-light body-normal-regular focus:outline-none focus:border-primary/40 transition-all placeholder:text-text-light-disabled shadow-sm"
-              required
-            />
-          </div>
-          <div class="space-y-[12px]">
-            <label class="body-normal-medium text-text-light-secondary ml-[4px]">URL Баннера</label>
-            <input
-              v-model="form.bannerUrl"
-              type="url"
-              placeholder="https://example.com/banner.jpg"
-              class="w-full bg-bg-content border border-white/5 rounded-[12px] px-[24px] py-[18px] text-text-light body-normal-regular focus:outline-none focus:border-primary/40 transition-all placeholder:text-text-light-disabled shadow-sm"
-              required
-            />
-          </div>
+          <AdminImageUpload
+            label="Постер"
+            variant="portrait"
+            v-model="form.posterUrl"
+          />
+          <AdminImageUpload
+            label="Баннер"
+            variant="landscape"
+            v-model="form.bannerUrl"
+          />
         </div>
 
         <!-- Тип и Жанры -->
@@ -297,7 +369,7 @@ const handleSubmit = async () => {
             :disabled="loading"
             class="w-full py-[24px] bg-primary hover:brightness-110 active:scale-[0.99] text-text-dark heading-s font-bold rounded-[14px] transition-all disabled:opacity-50 disabled:active:scale-100"
           >
-            {{ loading ? 'Создание...' : 'Добавить контент' }}
+            {{ loading ? 'Сохранение...' : (isEditMode ? 'Сохранить изменения' : 'Добавить контент') }}
           </button>
         </div>
 

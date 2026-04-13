@@ -18,12 +18,11 @@ const isLoading = ref(false)
 
 // Маппинг данных аналогично главной и странице фильма
 const mapMovie = (movie) => {
-  if (!movie) return null
   return {
     ...movie,
-    rating: movie.siteRating || movie.imdbRating || movie.kinopoiskRating || 0,
+    rating: movie.siteRating ? movie.siteRating * 2 : 0,
     genres: movie.genres?.map(g => g.name) || [],
-    ageLimit: movie.ageRating || '16+',
+    ageLimit: movie.ageLimit || '16+',
     statusText: movie.statusText || '' 
   }
 }

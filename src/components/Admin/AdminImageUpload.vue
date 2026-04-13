@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 
 const props = defineProps({
   label: { type: String, required: true },
@@ -10,12 +11,35 @@ const props = defineProps({
   modelValue: { type: String, default: '' }
 })
 
-const emit = defineEmits(['update:modelValue', 'file-selected'])
+const emit = defineEmits(['update:modelValue'])
+
+const { accessToken } = useAuth()
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
 
 const fileInput = ref(null)
 const selectedFile = ref(null)
-const previewUrl = ref(props.modelValue || null)
+
+const getFullUrl = (path) => {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  const origin = API_BASE_URL.replace('/api', '')
+  return `${origin}${path}`
+}
+
+const previewUrl = ref(getFullUrl(props.modelValue))
 const isDragging = ref(false)
+const isUploading = ref(false)
+const uploadError = ref(null)
+
+watch(() => props.modelValue, (newVal) => {
+  if (!newVal) {
+    selectedFile.value = null
+    previewUrl.value = null
+    if (fileInput.value) fileInput.value.value = ''
+  } else if (!selectedFile.value) {
+    previewUrl.value = getFullUrl(newVal)
+  }
+})
 
 const aspectStyle = computed(() => {
   if (props.variant === 'landscape') return { aspectRatio: '16/9' }
@@ -38,13 +62,42 @@ const displayHint = computed(() => {
 
 const triggerUpload = () => fileInput.value?.click()
 
-const processFile = (file) => {
-  if (!file || !file.type.startsWith('image/')) return
+const processFile = async (file) => {
+  if (!file || !file.type.startsWith('image/')) {
+    uploadError.value = 'Пожалуйста, выберите изображение'
+    return
+  }
+  
+  uploadError.value = null
   selectedFile.value = file
   previewUrl.value = URL.createObjectURL(file)
-  // Эмитим сам файл — родитель сам решает как его загружать
-  emit('file-selected', file)
-  // modelValue будет обновлён родителем после загрузки
+  isUploading.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken.value}`
+      },
+      body: formData
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.message || 'Ошибка загрузки')
+
+    emit('update:modelValue', data.url)
+  } catch (err) {
+    uploadError.value = err.message
+    selectedFile.value = null
+    previewUrl.value = null
+    if (fileInput.value) fileInput.value.value = ''
+    emit('update:modelValue', '')
+  } finally {
+    isUploading.value = false
+  }
 }
 
 const handleFileChange = (event) => {
@@ -71,8 +124,8 @@ const handleDragLeave = () => {
 const removeFile = () => {
   selectedFile.value = null
   previewUrl.value = null
+  uploadError.value = null
   if (fileInput.value) fileInput.value.value = ''
-  emit('file-selected', null)
   emit('update:modelValue', '')
 }
 
@@ -133,15 +186,20 @@ const formatSize = (bytes) => {
     <div v-else class="flex items-start gap-[20px] p-[16px] bg-bg-content rounded-[14px] border border-white/5">
       <!-- Image Preview -->
       <div
-        :class="['flex-shrink-0 bg-black rounded-[10px] overflow-hidden border border-white/10', previewWidth]"
+        :class="['relative flex-shrink-0 bg-black rounded-[10px] overflow-hidden border border-white/10 flex items-center justify-center', previewWidth]"
         :style="aspectStyle"
       >
         <img
+          v-if="previewUrl"
           :src="previewUrl"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-cover transition-opacity duration-300"
+          :class="isUploading ? 'opacity-30' : 'opacity-100'"
           alt="Preview"
           @error="e => e.target.style.opacity = '0.3'"
         />
+        <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+          <span class="body-small-medium text-white">Загрузка...</span>
+        </div>
       </div>
 
       <!-- File Info + Actions -->
@@ -150,7 +208,13 @@ const formatSize = (bytes) => {
           <p class="body-normal-medium text-text-light truncate max-w-[260px]">
             {{ selectedFile?.name || 'Загружено' }}
           </p>
-          <p v-if="selectedFile" class="body-small-regular text-text-light-disabled mt-[2px]">
+          <p v-if="uploadError" class="body-small-regular text-error mt-[2px]">
+            {{ uploadError }}
+          </p>
+          <p v-else-if="isUploading" class="body-small-regular text-warning mt-[2px]">
+            Загружается на сервер...
+          </p>
+          <p v-else-if="selectedFile" class="body-small-regular text-text-light-disabled mt-[2px]">
             {{ formatSize(selectedFile.size) }}
           </p>
           <p v-else class="body-small-regular text-primary mt-[2px]">Файл загружен ✓</p>

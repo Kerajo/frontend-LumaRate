@@ -1,8 +1,14 @@
 <script setup>
-import { ref } from 'vue'
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true
+  }
+})
+
+const emit = defineEmits(['update:modelValue'])
 
 const options = ['Новые', 'Реки ИИ', 'Высокий рейтинг']
-const selected = ref(options[0])
 </script>
 
 <template>
@@ -10,10 +16,10 @@ const selected = ref(options[0])
     <button 
       v-for="opt in options" 
       :key="opt"
-      @click="selected = opt"
+      @click="emit('update:modelValue', opt)"
       :class="[
         'px-[24px] py-[12px] rounded-[8px] body-m whitespace-nowrap transition-colors duration-200',
-        selected === opt 
+        modelValue === opt 
           ? 'bg-bg-body text-text-light' 
           : 'text-text-light opacity-70 hover:opacity-100 hover:bg-bg-body/50'
       ]"

@@ -16,6 +16,7 @@ import BaseModal from '../components/BaseModal.vue'
 import StarRating from '../components/StarRating.vue'
 import MovieCategoryBlock from '../components/MovieCategoryBlock.vue'
 import BaseNotification from '../components/BaseNotification.vue'
+import { getFullImageUrl } from '../utils/url'
 
 const route = useRoute()
 const router = useRouter()
@@ -252,7 +253,7 @@ const similarMovies = ref([])
             rgba(18, 18, 18, 0) 50%,
             rgba(18, 18, 18, 0.8) 100%
           ),
-          url('${movie.bannerUrl || movie.posterUrl}')`,
+          url('${getFullImageUrl(movie.bannerUrl || movie.posterUrl)}')`,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat'
@@ -281,7 +282,7 @@ const similarMovies = ref([])
             <div class="flex items-center gap-[16px]">
               <div class="flex items-center gap-[4px] body-m text-text-light">
                 <IconLogo class="w-[24px] h-[24px] fill-primary" />
-                <span>{{ movie.ratings?.siteRating ? (movie.ratings.siteRating * 2).toFixed(1) : '0.0' }}</span>
+                <span>{{ movie.ratings?.siteRating ? (movie.ratings.siteRating * 2).toFixed(1) : 'Нет оценок' }}</span>
               </div>
               <div v-if="movie.ratings?.kinopoiskRating" class="flex items-center gap-[4px] body-m text-text-light">
                 <IconKinopoisk class="w-[24px] h-[24px]" />
@@ -339,7 +340,7 @@ const similarMovies = ref([])
         <HorizontalScroll>
           <div v-for="(actor, index) in movie.actors" :key="index" class="flex flex-col items-center gap-[16px] flex-shrink-0">
             <div class="w-[202px] h-[202px] rounded-full overflow-hidden bg-bg-content shadow-xl border-2 border-transparent hover:border-primary/20 transition-all">
-              <img :src="actor.photoUrl || '/actorimg.png'" :alt="actor.fullName" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+              <img :src="actor.photoUrl ? getFullImageUrl(actor.photoUrl) : '/actorimg.png'" :alt="actor.fullName" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
             </div>
             <span class="heading-s text-text-light text-center">{{ actor.fullName }}</span>
           </div>
