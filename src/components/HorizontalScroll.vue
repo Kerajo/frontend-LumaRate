@@ -63,21 +63,21 @@ const scrollLeftAction = () => {
     <!-- Fog Shadow Gradient overlay -->
     <div 
       class="absolute inset-0 pointer-events-none z-20"
-      style="background: linear-gradient(90deg, #111 0%, rgba(17, 17, 17, 0.00) 14.9%, rgba(17, 17, 17, 0.00) 80%, #111 100%);"
+      style="background: linear-gradient(90deg, #111 0%, rgba(17, 17, 17, 0.00) 10%, rgba(17, 17, 17, 0.00) 90%, #111 100%);"
     ></div>
 
-    <!-- Left Scroll Button -->
+    <!-- Left Scroll Button (Hidden on mobile) -->
     <transition name="fade">
-      <div v-show="canScrollLeft" class="absolute left-[40px] top-1/2 -translate-y-1/2 z-30">
+      <div v-show="canScrollLeft" class="hidden lg:block absolute left-[40px] top-1/2 -translate-y-1/2 z-30">
         <IconButton variant="secondary" size="m" @click="scrollLeftAction">
           <IconLeftLine class="w-6 h-6" />
         </IconButton>
       </div>
     </transition>
 
-    <!-- Right Scroll Button -->
+    <!-- Right Scroll Button (Hidden on mobile) -->
     <transition name="fade">
-      <div v-show="canScrollRight" class="absolute right-[40px] top-1/2 -translate-y-1/2 z-30">
+      <div v-show="canScrollRight" class="hidden lg:block absolute right-[40px] top-1/2 -translate-y-1/2 z-30">
         <IconButton variant="secondary" size="m" @click="scrollRight">
           <IconRightLine class="w-6 h-6" />
         </IconButton>
@@ -88,8 +88,11 @@ const scrollLeftAction = () => {
     <div 
       ref="scrollContainer"
       @scroll="checkScroll"
-      class="flex gap-[32px] overflow-x-auto hide-scrollbar relative z-10"
-      style="padding-left: calc(50vw - 660px + 40px); padding-right: calc(50vw - 660px + 40px);"
+      class="flex lg:gap-[32px] gap-[16px] overflow-x-auto hide-scrollbar relative z-10"
+      :style="{
+        paddingLeft: 'max(20px, calc(50vw - 660px + 20px))',
+        paddingRight: 'max(20px, calc(50vw - 660px + 20px))'
+      }"
     >
       <slot></slot>
     </div>
@@ -115,10 +118,10 @@ const scrollLeftAction = () => {
   opacity: 0;
 }
 
-@media (max-width: 1320px) {
+@media (min-width: 1320px) {
   .hide-scrollbar {
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    padding-left: calc(50vw - 660px + 40px) !important;
+    padding-right: calc(50vw - 660px + 40px) !important;
   }
 }
 </style>

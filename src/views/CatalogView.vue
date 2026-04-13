@@ -143,10 +143,14 @@ const pageTitle = computed(() => {
   if (contentType.value === 'CARTOON') return 'Мультфильмы'
   return 'Каталог'
 })
+
+watch(pageTitle, (title) => {
+  document.title = `${title} — LumaRate`
+}, { immediate: true })
 </script>
 
 <template>
-  <main class="w-full pt-[160px] pb-[64px] min-h-screen bg-bg-body">
+  <main class="w-full lg:pt-[160px] pt-[120px] pb-[64px] min-h-screen bg-bg-body">
     <Container>
       
       <!-- Head -->
@@ -160,20 +164,22 @@ const pageTitle = computed(() => {
         </div>
  
         <!-- Title -->
-        <h1 class="text-4xl font-bold text-text-light">{{ pageTitle }}</h1>
+        <h1 class="lg:heading-xl heading-m text-text-light">{{ pageTitle }}</h1>
 
         <!-- Controls (Filters & Sort) -->
-        <div class="flex flex-col lg:flex-row justify-between w-full mt-[8px] gap-[24px]">
+        <div class="flex flex-col lg:flex-row lg:justify-between w-full mt-[8px] lg:gap-[24px] gap-[32px]">
           
           <!-- Filters -->
-          <div class="flex flex-wrap gap-[16px]">
+          <div class="grid grid-cols-1 sm:flex sm:flex-row gap-[12px] lg:gap-[16px] w-full lg:w-fit">
             <BaseDropdown label="Жанры" :options="genreOptions" v-model="selectedGenre" />
             <BaseDropdown label="Страны" :options="countryOptions" v-model="selectedCountry" />
             <BaseDropdown label="Годы" :options="yearOptions" v-model="selectedYear" />
           </div>
 
           <!-- Sorting -->
-          <SortToggle v-model="activeSortTab" />
+          <div class="w-full lg:w-fit flex justify-start lg:justify-end">
+             <SortToggle v-model="activeSortTab" />
+          </div>
 
         </div>
       </div>
@@ -193,7 +199,7 @@ const pageTitle = computed(() => {
           </div>
         </div>
 
-        <div v-else-if="!isLoading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[32px]">
+        <div v-else-if="!isLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-[32px] gap-[16px]">
           <MovieCard 
             v-for="(movie, index) in allMovies.slice(0, displayCount)" 
             :key="movie.id || index"
@@ -205,6 +211,7 @@ const pageTitle = computed(() => {
             :ageLimit="movie.ageLimit"
             :genres="movie.genres"
             :slug="movie.slug"
+            fluid
           />
         </div>
         

@@ -21,11 +21,11 @@ defineProps({
 </script>
 
 <template>
-  <section :class="['w-full', isFirst ? 'pt-[120px] pb-[64px]' : 'py-[64px]']">
-    <Container class="mb-[32px]">
+  <section :class="['w-full', isFirst ? 'lg:pt-[120px] pt-[80px] lg:pb-[64px] pb-[32px]' : 'lg:py-[64px] py-[32px]']">
+    <Container class="lg:mb-[32px] mb-[16px]">
       <a href="#" class="inline-flex items-center gap-[8px] group text-text-light hover:text-primary transition-colors cursor-pointer">
-        <h2 class="heading-xl">{{ title }}</h2>
-        <IconRightLine class="w-8 h-8 opacity-80 group-hover:opacity-100 transition-opacity fill-current" />
+        <h2 class="lg:heading-xl heading-m transition-all">{{ title }}</h2>
+        <IconRightLine class="lg:w-8 lg:h-8 w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity fill-current" />
       </a>
     </Container>
 
@@ -69,8 +69,8 @@ defineProps({
 /* Fallback padding for smaller screens where the calc(1320px/2) logic gets negative */
 @media (max-width: 1320px) {
   .hide-scrollbar {
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 }
 </style>

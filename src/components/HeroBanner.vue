@@ -26,11 +26,11 @@ const toggleBookmark = () => {
 
 <template>
   <div
-    class="w-full relative flex flex-col justify-end transition-all duration-700"
+    :class="[
+      'w-full relative flex flex-col justify-end transition-all duration-700 overflow-hidden',
+      'lg:h-[85vh] lg:min-h-[700px] lg:max-h-[880px] h-[600px] min-h-[500px]'
+    ]"
     :style="{
-      height: '85vh',
-      minHeight: '700px',
-      maxHeight: '880px',
       borderRadius: '0 0 32px 32px',
       backgroundColor: '#0a0a0b',
       backgroundImage: `
@@ -46,20 +46,20 @@ const toggleBookmark = () => {
       backgroundRepeat: 'no-repeat'
     }"
   >
-    <Container class="pb-[48px]">
-      <div class="flex flex-col gap-[24px] max-w-[800px] animate-in fade-in slide-in-from-bottom-6 duration-700">
+    <Container class="lg:pb-[48px] pb-[32px]">
+      <div class="flex flex-col lg:gap-[24px] gap-[16px] max-w-[800px] animate-in fade-in slide-in-from-bottom-6 duration-700">
         <!-- Tags -->
         <div class="flex flex-wrap gap-[8px]">
           <BadgeInfo v-if="rating" variant="rating" :rating="rating">{{ rating.toFixed(1) }}</BadgeInfo>
           <BadgeInfo v-if="ageLimit">{{ ageLimit }}</BadgeInfo>
           <BadgeInfo v-if="year">{{ year }}</BadgeInfo>
-          <BadgeInfo v-for="genre in genres" :key="genre">{{ genre }}</BadgeInfo>
+          <BadgeInfo v-for="genre in genres.slice(0, 3)" :key="genre">{{ genre }}</BadgeInfo>
         </div>
 
         <!-- Title & Description -->
-        <div class="flex flex-col gap-[16px]">
-          <h1 class="heading-4xl text-text-light drop-shadow-lg">{{ title }}</h1>
-          <p class="body-normal-regular text-text-light/80 drop-shadow-md leading-relaxed">
+        <div class="flex flex-col lg:gap-[16px] gap-[12px]">
+          <h1 class="lg:heading-4xl heading-2xl text-text-light drop-shadow-lg">{{ title }}</h1>
+          <p class="lg:body-normal-regular body-small-regular text-text-light/80 drop-shadow-md leading-relaxed line-clamp-3 lg:line-clamp-none">
             {{ description }}
           </p>
         </div>

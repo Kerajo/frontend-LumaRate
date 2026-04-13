@@ -49,45 +49,45 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-fit min-h-[400px] p-[32px] rounded-[24px] bg-bg-content flex flex-col gap-[24px] border border-white/5 transition-all hover:border-white/10">
+  <div class="w-full h-fit lg:min-h-[400px] min-h-[300px] lg:p-[32px] p-[20px] rounded-[24px] bg-bg-content flex flex-col lg:gap-[24px] gap-[16px] border border-white/5 transition-all hover:border-white/10">
     <!-- Header -->
-    <div class="flex justify-between items-start">
-      <div class="flex gap-[16px] items-center">
+    <div class="flex justify-between items-start gap-4">
+      <div class="flex lg:gap-[16px] gap-[12px] items-center">
         <!-- Avatar -->
-        <div class="w-[56px] h-[56px] rounded-full overflow-hidden bg-bg-body shrink-0 shadow-xl border border-white/5">
+        <div class="lg:w-[56px] lg:h-[56px] w-[44px] h-[44px] rounded-full overflow-hidden bg-bg-body shrink-0 shadow-xl border border-white/5">
           <img v-if="authorImage" :src="authorImage" :alt="authorName" class="w-full h-full object-cover" />
           <div v-else class="w-full h-full flex items-center justify-center bg-bg-body text-text-light/20">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <svg class="lg:w-8 lg:h-8 w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
           </div>
         </div>
         
         <!-- Info -->
-        <div class="flex flex-col gap-[6px]">
-          <div class="flex items-center gap-[8px]">
-            <h4 class="heading-s text-text-light">{{ authorName }}</h4>
+        <div class="flex flex-col gap-[4px] lg:gap-[6px]">
+          <div class="flex flex-col lg:flex-row lg:items-center gap-[4px] lg:gap-[8px]">
+            <h4 class="lg:heading-s body-normal-bold text-text-light line-clamp-1">{{ authorName }}</h4>
             <span 
               v-if="getRoleLabel(authorRole)"
               :class="[
-                'text-[10px] font-bold uppercase tracking-widest px-[8px] py-[2px] rounded-full border',
+                'text-[8px] lg:text-[10px] font-bold uppercase tracking-widest px-[8px] py-[2px] rounded-full border w-fit',
                 getRoleClass(authorRole)
               ]"
             >
               {{ getRoleLabel(authorRole) }}
             </span>
           </div>
-          <StarRating v-if="rating" :modelValue="rating" readonly :size="18" />
+          <StarRating v-if="rating" :modelValue="rating" readonly :size="14" class="lg:scale-125 origin-left" />
         </div>
       </div>
-      <span class="body-s text-text-light/40">{{ date }}</span>
+      <span class="body-s text-text-light/40 whitespace-nowrap">{{ date }}</span>
     </div>
 
     <!-- Body -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
-      <h3 v-if="title" class="heading-m text-text-light mb-[12px] leading-snug">{{ title }}</h3>
+      <h3 v-if="title" class="lg:heading-m body-normal-bold text-text-light mb-[8px] lg:mb-[12px] leading-snug line-clamp-2">{{ title }}</h3>
       
       <p 
         ref="textRef"
-        class="body-normal-regular text-text-light/80 line-clamp-[10] overflow-hidden whitespace-pre-wrap leading-relaxed"
+        class="body-normal-regular text-text-light/80 line-clamp-[8] lg:line-clamp-[10] overflow-hidden whitespace-pre-wrap leading-relaxed"
       >
         {{ text }}
       </p>

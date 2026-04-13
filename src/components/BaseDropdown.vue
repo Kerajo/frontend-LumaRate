@@ -45,7 +45,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative w-[180px]" ref="dropdownRef">
+  <div class="relative w-full lg:w-[180px]" ref="dropdownRef">
     <button 
       @click="toggle"
       class="flex items-center justify-between gap-[8px] p-[16px] bg-bg-content rounded-[8px] hover:brightness-110 transition-all w-full"

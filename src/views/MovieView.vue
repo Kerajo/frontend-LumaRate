@@ -35,6 +35,7 @@ const fetchMovieData = async (slug) => {
     const response = await fetch(`${API_BASE_URL}/contents/${slug}`)
     if (response.ok) {
       movie.value = await response.json()
+      document.title = `${movie.value.title} — LumaRate`
       if (movie.value.id) {
         fetchReviews(movie.value.id)
         fetchRecensions(movie.value.id)
@@ -244,7 +245,7 @@ const similarMovies = ref([])
   <main v-if="movie" class="w-full">
     <!-- Banner Section -->
     <div
-      class="w-full relative min-h-[700px] flex flex-col"
+      :class="['w-full relative flex flex-col transition-all duration-700', 'lg:min-h-[700px] min-h-[100vh] h-[100vh] lg:h-auto']"
       :style="{
         backgroundImage: `
           linear-gradient(
@@ -259,45 +260,45 @@ const similarMovies = ref([])
         backgroundRepeat: 'no-repeat'
       }"
     >
-      <Container class="flex-grow flex flex-col justify-between pt-[120px] pb-[80px]">
+      <Container class="flex-grow flex flex-col justify-between lg:pt-[120px] pt-[80px] lg:pb-[80px] pb-[40px]">
         <!-- Breadcrumbs -->
-        <div class="flex items-center gap-[8px] body-m text-text-light/60">
+        <div class="flex items-center gap-[8px] lg:body-m body-s text-text-light/60 flex-wrap">
           <router-link to="/" class="hover:text-text-light transition-colors">Главная</router-link>
           <span>/</span>
           <router-link to="/catalog" class="hover:text-text-light transition-colors">Фильмы</router-link>
           <span>/</span>
-          <span class="text-text-light">{{ movie.title }}</span>
+          <span class="text-text-light line-clamp-1 truncate max-w-[150px] lg:max-w-none">{{ movie.title }}</span>
         </div>
 
         <!-- Movie Info -->
-        <div class="flex flex-col gap-[24px] max-w-[800px]">
-          <div class="flex items-center gap-[8px]">
+        <div class="flex flex-col lg:gap-[24px] gap-[16px] max-w-[800px]">
+          <div class="flex items-center gap-[8px] flex-wrap">
             <BadgeInfo v-if="movie.ageRating" class="bg-bg-body">{{ movie.ageRating }}</BadgeInfo>
             <BadgeInfo v-if="movie.year" class="bg-bg-body">{{ movie.year }}</BadgeInfo>
             <BadgeInfo v-for="g in movie.genres.slice(0, 3)" :key="g.id" class="bg-bg-body">{{ g.name }}</BadgeInfo>
           </div>
 
-          <div class="flex flex-col gap-[16px]">
-            <h1 class="text-text-light heading-4xl leading-tight">{{ movie.title }}</h1>
-            <div class="flex items-center gap-[16px]">
+          <div class="flex flex-col lg:gap-[16px] gap-[12px]">
+            <h1 class="text-text-light lg:heading-4xl heading-2xl leading-tight">{{ movie.title }}</h1>
+            <div class="flex items-center gap-[16px] flex-wrap">
               <div class="flex items-center gap-[4px] body-m text-text-light">
-                <IconLogo class="w-[24px] h-[24px] fill-primary" />
+                <IconLogo class="w-[20px] h-[20px] lg:w-[24px] lg:h-[24px] fill-primary" />
                 <span>{{ movie.ratings?.siteRating ? (movie.ratings.siteRating * 2).toFixed(1) : 'Нет оценок' }}</span>
               </div>
               <div v-if="movie.ratings?.kinopoiskRating" class="flex items-center gap-[4px] body-m text-text-light">
-                <IconKinopoisk class="w-[24px] h-[24px]" />
+                <IconKinopoisk class="w-[20px] h-[20px] lg:w-[24px] lg:h-[24px]" />
                 <span>{{ movie.ratings.kinopoiskRating.toFixed(1) }}</span>
               </div>
               <div v-if="movie.ratings?.imdbRating" class="flex items-center gap-[4px] body-m text-text-light">
-                <IconImdb class="w-[48px] h-[24px]" />
+                <IconImdb class="w-[40px] h-[20px] lg:w-[48px] lg:h-[24px]" />
                 <span>{{ movie.ratings.imdbRating.toFixed(1) }}</span>
               </div>
             </div>
-            <p class="body-m text-text-light/80 leading-relaxed">{{ movie.shortDescription }}</p>
+            <p class="lg:body-m body-small-regular text-text-light/80 leading-relaxed line-clamp-3 lg:line-clamp-none">{{ movie.shortDescription }}</p>
           </div>
 
-          <div class="flex items-center gap-[8px]">
-            <BaseButton variant="primary" size="l" @click="openWriteModal('review')">Оценить фильм</BaseButton>
+          <div class="flex items-center gap-[12px]">
+            <BaseButton variant="primary" size="l" class="lg:px-[48px] px-[24px] text-sm lg:text-base" @click="openWriteModal('review')">Оценить фильм</BaseButton>
             <IconButton variant="secondary" size="l" :isActive="isBookmarked" @click="toggleBookmark">
               <IconBookmarks class="w-6 h-6" />
             </IconButton>
@@ -307,27 +308,27 @@ const similarMovies = ref([])
     </div>
 
     <!-- Page Content -->
-    <div class="w-full pt-[120px] pb-[64px] flex flex-col gap-[120px]">
+    <div class="w-full lg:pt-[120px] pt-[64px] pb-[64px] flex flex-col lg:gap-[120px] gap-[64px]">
       <Container>
-        <div class="p-[4px] rounded-[8px] bg-bg-content flex gap-[12px] w-fit">
-          <BaseButton v-for="tab in tabs" :key="tab.id" variant="secondary" size="s" @click="scrollTo(tab.id)">{{ tab.label }}</BaseButton>
+        <div class="p-[4px] rounded-[12px] bg-bg-content flex gap-2 lg:gap-[12px] w-full lg:w-fit overflow-x-auto hide-scrollbar">
+          <BaseButton v-for="tab in tabs" :key="tab.id" variant="secondary" size="s" class="flex-shrink-0" @click="scrollTo(tab.id)">{{ tab.label }}</BaseButton>
         </div>
       </Container>
 
       <!-- About -->
       <section id="about">
         <Container>
-          <div class="flex flex-col gap-[32px]">
-            <h2 class="heading-xl text-text-light">О фильме</h2>
-            <div class="flex gap-[48px]">
-              <div class="w-1/2">
-                <p class="body-m text-text-light leading-relaxed whitespace-pre-wrap">{{ movie.description }}</p>
+          <div class="flex flex-col lg:gap-[32px] gap-[24px]">
+            <h2 class="lg:heading-xl heading-m text-text-light">О фильме</h2>
+            <div class="flex flex-col lg:flex-row lg:gap-[48px] gap-[32px]">
+              <div class="w-full lg:w-1/2">
+                <p class="lg:body-m body-normal-regular text-text-light leading-relaxed whitespace-pre-wrap">{{ movie.description }}</p>
               </div>
-              <div class="w-1/2 flex flex-wrap gap-y-[24px]">
-                <div v-if="directorsDisplay" class="w-1/2 flex flex-col gap-[4px]"><span class="body-m text-text-light/60">Режиссеры</span><span class="body-m text-text-light">{{ directorsDisplay }}</span></div>
-                <div v-if="countriesDisplay" class="w-1/2 flex flex-col gap-[4px]"><span class="body-m text-text-light/60">Страны</span><span class="body-m text-text-light">{{ countriesDisplay }}</span></div>
-                <div v-if="actorsDisplay" class="w-full flex flex-col gap-[4px]"><span class="body-m text-text-light/60">Актеры</span><span class="body-m text-text-light">{{ actorsDisplay }}</span></div>
-                <div v-if="genresDisplay" class="w-full flex flex-col gap-[4px]"><span class="body-m text-text-light/60">Жанры</span><span class="body-m text-text-light">{{ genresDisplay }}</span></div>
+              <div class="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-y-[16px] lg:gap-y-[24px] gap-x-8">
+                <div v-if="directorsDisplay" class="flex flex-col gap-[4px]"><span class="body-s lg:body-m text-text-light/60">Режиссеры</span><span class="body-s lg:body-m text-text-light">{{ directorsDisplay }}</span></div>
+                <div v-if="countriesDisplay" class="flex flex-col gap-[4px]"><span class="body-s lg:body-m text-text-light/60">Страны</span><span class="body-s lg:body-m text-text-light">{{ countriesDisplay }}</span></div>
+                <div v-if="actorsDisplay" class="flex flex-col gap-[4px] col-span-full"><span class="body-s lg:body-m text-text-light/60">Актеры</span><span class="body-s lg:body-m text-text-light">{{ actorsDisplay }}</span></div>
+                <div v-if="genresDisplay" class="flex flex-col gap-[4px] col-span-full"><span class="body-s lg:body-m text-text-light/60">Жанры</span><span class="body-s lg:body-m text-text-light">{{ genresDisplay }}</span></div>
               </div>
             </div>
           </div>
@@ -336,27 +337,27 @@ const similarMovies = ref([])
 
       <!-- Actors -->
       <section id="actors" v-if="movie.actors?.length">
-        <Container class="mb-[32px]"><h2 class="heading-xl text-text-light">Актеры</h2></Container>
+        <Container class="lg:mb-[32px] mb-[16px]"><h2 class="lg:heading-xl heading-m text-text-light">Актеры</h2></Container>
         <HorizontalScroll>
-          <div v-for="(actor, index) in movie.actors" :key="index" class="flex flex-col items-center gap-[16px] flex-shrink-0">
-            <div class="w-[202px] h-[202px] rounded-full overflow-hidden bg-bg-content shadow-xl border-2 border-transparent hover:border-primary/20 transition-all">
+          <div v-for="(actor, index) in movie.actors" :key="index" class="flex flex-col items-center gap-[12px] flex-shrink-0">
+            <div class="lg:w-[202px] lg:h-[202px] w-[140px] h-[140px] rounded-full overflow-hidden bg-bg-content shadow-xl border-2 border-transparent hover:border-primary/20 transition-all">
               <img :src="actor.photoUrl ? getFullImageUrl(actor.photoUrl) : '/actorimg.png'" :alt="actor.fullName" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
             </div>
-            <span class="heading-s text-text-light text-center">{{ actor.fullName }}</span>
+            <span class="body-normal-bold lg:heading-s text-text-light text-center">{{ actor.fullName }}</span>
           </div>
         </HorizontalScroll>
       </section>
 
       <!-- Recensions (Expert) -->
       <section id="reviews">
-        <Container class="flex flex-col gap-[32px]">
-          <div class="flex justify-between items-center">
-            <h2 class="heading-xl text-text-light">Рецензии</h2>
-            <BaseButton v-if="currentUser && currentUser.role !== 'USER'" variant="primary" size="l" @click="openWriteModal('recension')">
+        <Container class="flex flex-col lg:gap-[32px] gap-[24px]">
+          <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <h2 class="lg:heading-xl heading-m text-text-light">Рецензии</h2>
+            <BaseButton v-if="currentUser && currentUser.role !== 'USER'" variant="primary" size="l" class="w-full lg:w-fit" @click="openWriteModal('recension')">
               Написать рецензию
             </BaseButton>
           </div>
-          <div v-if="allRecensions.length" class="grid grid-cols-2 gap-[24px]">
+          <div v-if="allRecensions.length" class="grid grid-cols-1 lg:grid-cols-2 lg:gap-[24px] gap-[16px]">
             <ReviewCard v-for="rec in allRecensions" :key="rec.id" v-bind="mapRecensionProps(rec)" @read-more="openReadMore(rec)" />
           </div>
           <div v-else class="py-12 px-8 bg-white/5 rounded-[24px] text-center text-text-light/20 body-m">Для этого фильма пока нет рецензий от экспертов.</div>
@@ -365,31 +366,32 @@ const similarMovies = ref([])
 
       <!-- User Reviews -->
       <section id="comments">
-        <Container class="flex flex-col gap-[32px]">
-          <div class="flex justify-between items-center">
-            <h2 class="heading-xl text-text-light">Отзывы пользователей</h2>
-            <BaseButton variant="primary" size="l" @click="openWriteModal('review')">
+        <Container class="flex flex-col lg:gap-[32px] gap-[24px]">
+          <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <h2 class="lg:heading-xl heading-m text-text-light">Отзывы пользователей</h2>
+            <BaseButton variant="primary" size="l" class="w-full lg:w-fit" @click="openWriteModal('review')">
               Написать отзыв
             </BaseButton>
           </div>
-          <div v-if="allReviews.length" class="grid grid-cols-2 gap-[24px]">
+          <div v-if="allReviews.length" class="grid grid-cols-1 lg:grid-cols-2 lg:gap-[24px] gap-[16px]">
             <ReviewCard v-for="review in allReviews" :key="review.id" v-bind="mapReviewProps(review)" @read-more="openReadMore(review)" />
           </div>
           <div v-else class="py-12 px-8 bg-white/5 rounded-[24px] text-center text-text-light/20 body-m">Станьте первым, кто оставит отзыв!</div>
         </Container>
       </section>
 
+      <!-- CTA Section -->
       <section>
         <Container>
-          <div class="bg-bg-content rounded-[24px] p-[48px] flex justify-between items-center shadow-2xl overflow-hidden relative">
-            <div class="flex flex-col gap-[32px] max-w-[600px] relative z-10">
-              <div class="flex flex-col gap-[16px]">
-                <h2 class="heading-2xl text-text-light">Не забудьте оценить фильм</h2>
-                <p class="body-normal-regular text-text-light/60">Помогите другим пользователям сделать правильный выбор — поделитесь своим мнением о фильме.</p>
+          <div class="bg-bg-content lg:rounded-[24px] rounded-[16px] lg:p-[48px] p-[24px] flex flex-col-reverse lg:flex-row lg:justify-between lg:items-center shadow-2xl overflow-hidden relative gap-8 text-center lg:text-left">
+            <div class="flex flex-col lg:gap-[32px] gap-[16px] lg:max-w-[600px] w-full relative z-10 items-center lg:items-start">
+              <div class="flex flex-col lg:gap-[16px] gap-[12px]">
+                <h2 class="lg:heading-2xl heading-m text-text-light">Не забудьте оценить фильм</h2>
+                <p class="lg:body-normal-regular body-small-regular text-text-light/60">Помогите другим пользователям сделать правильный выбор — поделитесь своим мнением о фильме.</p>
               </div>
-              <BaseButton variant="primary" size="l" class="w-fit" @click="openWriteModal('review')">Оценить фильм</BaseButton>
+              <BaseButton variant="primary" size="l" class="lg:w-fit w-full" @click="openWriteModal('review')">Оценить фильм</BaseButton>
             </div>
-            <img src="/CTA.svg" alt="CTA" class="w-[200px] relative z-10" />
+            <img src="/CTA.svg" alt="CTA" class="lg:w-[200px] w-[120px] mx-auto lg:mx-0 relative z-10 opacity-80 lg:opacity-100" />
             <div class="absolute inset-0 bg-primary/5 blur-[120px]"></div>
           </div>
         </Container>

@@ -38,6 +38,10 @@ const props = defineProps({
   slug: {
     type: String,
     required: true,
+  },
+  fluid: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -55,15 +59,16 @@ const goToMovie = () => {
 };
 
 const sizeClasses = computed(() => {
-  if (props.size === 's') return 'w-[280px] h-[420px]';
-  return 'w-[306px] h-[459px]';
+  if (props.fluid) return 'w-full aspect-[2/3] h-auto';
+  if (props.size === 's') return 'w-[140px] sm:w-[175px] lg:w-[280px] aspect-[2/3] h-auto flex-shrink-0';
+  return 'w-[155px] sm:w-[200px] lg:w-[306px] aspect-[2/3] h-auto flex-shrink-0';
 });
 </script>
 
 <template>
   <div 
     :class="[
-      'relative rounded-[8px] overflow-hidden group cursor-pointer flex-shrink-0',
+      'relative rounded-[8px] overflow-hidden group cursor-pointer',
       sizeClasses
     ]"
     @click="goToMovie"

@@ -100,6 +100,12 @@
   --font-primary: 'Overused Grotesk', sans-serif;
 }
 
+html, body, #app {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
 @utility heading-4xl {
   font-family: var(--font-primary);
   font-weight: 500;
