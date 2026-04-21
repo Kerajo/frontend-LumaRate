@@ -19,13 +19,17 @@ const handleRegister = async () => {
     return
   }
 
-  // 2. Требования к паролю (оставляем старые или обновляем под бэк)
-  // Бэк ожидает цифру и минимум 8 символов. 
-  // В старом коде была проверка на спецсимволы, я ее оставлю, 
-  // но добавлю проверку на цифру как хочет бэк.
-  const hasNumber = /\d/.test(password.value)
-  if (password.value.length < 8 || !hasNumber) {
-    errorMessage.value = 'Пароль должен содержать минимум 8 символов и хотя бы одну цифру'
+  // 1.5. Формат логина
+  const loginRegex = /^[a-z0-9_.-]{3,50}$/
+  if (!loginRegex.test(username.value)) {
+    errorMessage.value = 'Логин: 3-50 символов (строчные латинские буквы, цифры, _, ., -)'
+    return
+  }
+
+  // 2. Требования к паролю
+  const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
+  if (password.value.length < 8 || !specialCharsRegex.test(password.value)) {
+    errorMessage.value = 'Пароль должен содержать минимум 8 символов и спецсимволы (!@# и т.д.)'
     return
   }
 
@@ -57,13 +61,14 @@ const handleRegister = async () => {
     </div>
 
     <!-- Auth Block -->
-    <div class="relative z-10 w-[536px] bg-bg-content rounded-[16px] p-[32px] flex flex-col gap-[32px] shadow-2xl">
-      
+    <div
+      class="relative z-10 w-[536px] bg-bg-content rounded-[16px] p-[32px] flex flex-col gap-[32px] shadow-2xl"
+    >
       <!-- Head -->
       <div class="flex flex-col items-center text-center gap-[8px]">
         <h1 class="text-text-light heading-l font-bold">Регистрация</h1>
         <p class="text-text-light opacity-60 body-m max-w-[320px]">
-          Создайте аккаунт, указав логин, пароль<br>и подтвердив его
+          Создайте аккаунт, указав логин, пароль<br />и подтвердив его
         </p>
       </div>
 
@@ -73,21 +78,41 @@ const handleRegister = async () => {
           v-model="username"
           type="text"
           placeholder="Логин"
-          :class="['w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50', errorMessage && errorMessage === 'Пожалуйста, заполните все поля' && !username ? 'border-[#FF3B30]' : 'border-transparent focus:border-primary/50']"
+          :class="[
+            'w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50',
+            errorMessage && errorMessage === 'Пожалуйста, заполните все поля' && !username
+              ? 'border-[#FF3B30]'
+              : 'border-transparent focus:border-primary/50',
+          ]"
           @keyup.enter="handleRegister"
         />
         <input
           v-model="password"
           type="password"
           placeholder="Пароль"
-          :class="['w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50', errorMessage && (errorMessage.includes('Пароль') || errorMessage.includes('Пароли') || (errorMessage === 'Пожалуйста, заполните все поля' && !password)) ? 'border-[#FF3B30]' : 'border-transparent focus:border-primary/50']"
+          :class="[
+            'w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50',
+            errorMessage &&
+            (errorMessage.includes('Пароль') ||
+              errorMessage.includes('Пароли') ||
+              (errorMessage === 'Пожалуйста, заполните все поля' && !password))
+              ? 'border-[#FF3B30]'
+              : 'border-transparent focus:border-primary/50',
+          ]"
           @keyup.enter="handleRegister"
         />
         <input
           v-model="confirmPassword"
           type="password"
           placeholder="Подтвердите пароль"
-          :class="['w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50', errorMessage && (errorMessage.includes('Пароли') || (errorMessage === 'Пожалуйста, заполните все поля' && !confirmPassword)) ? 'border-[#FF3B30]' : 'border-transparent focus:border-primary/50']"
+          :class="[
+            'w-full bg-bg-body text-text-light body-m p-[20px] rounded-[8px] outline-none border transition-colors placeholder:opacity-50',
+            errorMessage &&
+            (errorMessage.includes('Пароли') ||
+              (errorMessage === 'Пожалуйста, заполните все поля' && !confirmPassword))
+              ? 'border-[#FF3B30]'
+              : 'border-transparent focus:border-primary/50',
+          ]"
           @keyup.enter="handleRegister"
         />
         <div v-if="errorMessage" class="text-[#FF3B30] body-m px-[4px]">
@@ -97,7 +122,9 @@ const handleRegister = async () => {
 
       <!-- Footer (Buttons) -->
       <div class="flex flex-col gap-[16px]">
-        <BaseButton variant="primary" size="m" class="w-full justify-center" @click="handleRegister">Создать</BaseButton>
+        <BaseButton variant="primary" size="m" class="w-full justify-center" @click="handleRegister"
+          >Создать</BaseButton
+        >
         <BaseButton
           variant="tertiary"
           size="m"

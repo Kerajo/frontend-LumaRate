@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import HeroBanner from '../components/HeroBanner.vue'
 import MovieCategoryBlock from '../components/MovieCategoryBlock.vue'
 import GenreCard from '../components/GenreCard.vue'
+import AiRecommendations from '../components/AiRecommendations.vue'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
 
@@ -110,6 +111,8 @@ const getGenreImage = (name) => {
       title="Топ-10 недели" 
       :movies="homeData.top10" 
     />
+
+    <AiRecommendations />
 
     <!-- Genres -->
     <MovieCategoryBlock title="Жанры">

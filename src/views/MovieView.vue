@@ -16,6 +16,7 @@ import BaseModal from '../components/BaseModal.vue'
 import StarRating from '../components/StarRating.vue'
 import MovieCategoryBlock from '../components/MovieCategoryBlock.vue'
 import BaseNotification from '../components/BaseNotification.vue'
+import MovieChat from '../components/MovieChat.vue'
 import { getFullImageUrl } from '../utils/url'
 
 const route = useRoute()
@@ -332,6 +333,13 @@ const similarMovies = ref([])
               </div>
             </div>
           </div>
+        </Container>
+      </section>
+
+      <!-- AI Chat -->
+      <section>
+        <Container>
+           <MovieChat :movie="movie" />
         </Container>
       </section>
 
